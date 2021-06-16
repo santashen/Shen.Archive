@@ -19,10 +19,8 @@ def psum(x):
         data = None
 
     data = comm.scatter(data,root=0)
-    local_sum = nb_sum(data)
-    all_sum = comm.reduce(local_sum,root=0,op=MPI.SUM)
-
-    if rank==0:
-        return all_sum
-    else:
-        return rank
+    local_sum = np.array([nb_sum(data),nb_sum(data)])
+    all_sum = np.array([0,0])
+    comm.Allreduce(local_sum,all_sum,op=MPI.SUM)
+    
+    return all_sum
